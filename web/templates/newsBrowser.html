@@ -6,6 +6,15 @@
     <title>Администрирование новостей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/styles/admin.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="/assets/styles/admin.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossor>
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.tiny.cloud/1/u1l53fjmgcu99s4noavpcul8wsm0jbukcuwn15y2ktvabu2h/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>
+    <script src="/assets/js/admin.js" type="text/javascript"></script>
+    <script src="/assets/js/tinyMCE.js" type="text/javascript"></script>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
@@ -18,12 +27,6 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="/newsBrowser">Новости</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/managerBrowser">Руководители</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/images">Изображения</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/logout" onclick="logout(); return false;">
@@ -42,32 +45,34 @@
 
     async function loadNews(){
         try{
-            const res = await fetch('http://localhost:8081/news/');
+            const res = await fetch('http://localhost:8081/api/v1/news/');
             const newsList = await res.json();
             newsContainer.innerHTML='';
             newsList.forEach((item,index)=>{
                 const div=document.createElement('div'); div.className='news-item';
-                const img=document.createElement('img'); img.className='news-image'; img.src=item.image;
-                img.onclick=()=>openImageSelector(index); // смена картинки
+
                 const contentDiv=document.createElement('div'); contentDiv.className='container-sm';
                 const title=document.createElement('input'); title.className='form-control'; title.value=item.title;
-                const date=document.createElement('input'); date.className='form-control'; date.type='date'; date.value=item.date.split('T')[0];
-                const text=document.createElement('textarea'); text.className='form-control'; text.value=item.content;
+                const messageDate=document.createElement('input'); messageDate.className='form-control'; messageDate.type='date'; messageDate.value=item.messageDate.split('T')[0];
+                const message=document.createElement('textarea'); message.className='form-control'; message.value=item.message;
+                const type=document.createElement('select'); type.className='form-control'; type.value=item.type;
+                const mediaLink=document.createElement('input'); mediaLink.className='form-control'; mediaLink.value=item.mediaLink;
+                const downloadLink=document.createElement('input'); downloadLink.className='form-control'; downloadLink.value=item.downloadLink;
+                const statusId=document.createElement('select'); statusId.className='form-control'; statusId.value=item.statusId;
 
-                // const id=document.createElement('input'); id.value=item.ID; id.disabled=true;
                 const saveBtn=document.createElement('button'); saveBtn.className='btn btn-outline-primary'; saveBtn.textContent='Сохранить';
-                saveBtn.onclick=()=>saveNews(item.ID,title.value,text.value,date.value,currentEditImage||item.image);
+                saveBtn.onclick=()=>saveNews(item.ID,title.value,messageDate.value,message.value,type.value,mediaLink.value,downloadLink.value,statusId.value,item.authorId);
 
                 const deleteBtn=document.createElement('button'); deleteBtn.className='btn btn-outline-danger'; deleteBtn.textContent='Удалить';
                 deleteBtn.onclick=()=>deleteNews(item.ID);
 
                 contentDiv.appendChild(title);
-                contentDiv.appendChild(date);
-                contentDiv.appendChild(text);
-                // contentDiv.appendChild(id);
+                contentDiv.appendChild(messageDate);
+                contentDiv.appendChild(message);
+                contentDiv.appendChild(type);
+
                 contentDiv.appendChild(saveBtn);
                 contentDiv.appendChild(deleteBtn);
-                div.appendChild(img);
                 div.appendChild(contentDiv);
                 newsContainer.appendChild(div);
             });
@@ -75,18 +80,17 @@
     }
 
     // --- Функции работы с сервером ---
-    async function saveNews(id,title,content,date,image){
+    async function saveNews(id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId){
         try{
-            const res=await fetch('http://localhost:8081/news/'+id,{
+            const res=await fetch('http://localhost:8081/api/v1/news/'+id,{
                 method:'PUT',
                 headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({id,title,content,date,image})
+                body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId})
             });
             if (!res.ok) {
                 const message = `An error occurred: ${res.status}`;
                 throw new Error(message);
             }
-            currentEditImage='';
             await loadNews();
         }catch(error)
         {
@@ -99,7 +103,7 @@
     async function deleteNews(id){
         if(!confirm('Удалить новость?')) return;
         try{
-            const res=await fetch('http://localhost:8081/news/'+id,{
+            const res=await fetch('http://localhost:8081/api/v1/news/'+id,{
                 method:'DELETE',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({id})
