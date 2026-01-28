@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Аутентификация</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; }
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f5;
+        }
+        .login-card {
+            background: #ffffff;
+            padding: 32px;
+            width: 360px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .message {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Вход</h2>
+    <input type="text" id="login" placeholder="Логин" />
+    <input type="password" id="password" placeholder="Пароль" />
+    <button id="btnLogin" onclick="authenticate()">Войти</button>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    async function authenticate() {
+        const existingToken = localStorage.getItem('jwt');
+        const login = document.getElementById('login').value;
+        const password = document.getElementById('password').value;
+        const message = document.getElementById('message');
+        const btnLogin = document.getElementById('btnLogin');
+
+        if (!login || !password) {
+            message.textContent = 'Введите логин и пароль';
+            message.style.color = 'red';
+            return;
+        }
+
+        try {
+            btnLogin.disabled = true;
+            const response = await fetch('http://localhost:8081/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ login, password })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка авторизации');
+            }
+
+            const result = await response.json();
+
+            // ожидаем, что сервер вернёт JWT
+            const token = result.token;
+            if (token) {
+                // сохраняем JWT
+                localStorage.setItem('jwt', token);
+            }
+
+            message.textContent = 'Успешный вход';
+            message.style.color = 'green';
+            console.log('Ответ сервера:', result);
+
+            setTimeout(() => {
+                window.location.href = '/newsBrowser';
+            }, 800);
+
+        } catch (err) {
+            message.textContent = 'Неверный логин или пароль';
+            message.style.color = 'red';
+            btnLogin.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>

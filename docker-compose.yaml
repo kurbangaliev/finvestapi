@@ -1,0 +1,115 @@
+version: "3.8"
+services:
+  app:
+    container_name: ${PROJECT_NAME}
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: denislam/finvestapi:latest
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: 5432
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - local-network
+
+  prometheus:
+    container_name: ${PROJECT_NAME}-prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    networks:
+      - local-network
+
+  grafana:
+    container_name: ${PROJECT_NAME}-grafana
+    image: grafana/grafana-enterprise
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - local-network
+
+  postgres:
+    container_name: ${PROJECT_NAME}-postgres-db
+    image: postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      - ./scripts/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - db-data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      - local-network
+
+  pgadmin:
+    container_name: ${PROJECT_NAME}-pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "kurbangaliev@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5051:80"
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - local-network
+
+volumes:
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+  db-data:
+    driver: local
+
+networks:
+  local-network:
+    driver: bridge

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администрирование новостей</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/styles/admin.css" rel="stylesheet">
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="/assets/js/admin.js" type="text/javascript"></script>
+<header class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">Администрирование новостей</a>
+        <a class="nav-link" href="/newsAdd"><img src="assets/icons/add-square.svg"  width="32" height="32"/></a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/newsBrowser">Новости</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/managerBrowser">Руководители</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/images">Изображения</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout" onclick="logout(); return false;">
+                        <img src="assets/icons/logout.svg"  width="32" height="32"/>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<main id="newsContainer"></main>
+
+<script>
+    const newsContainer = document.getElementById('newsContainer');
+
+    async function loadNews(){
+        try{
+            const res = await fetch('http://localhost:8081/news/');
+            const newsList = await res.json();
+            newsContainer.innerHTML='';
+            newsList.forEach((item,index)=>{
+                const div=document.createElement('div'); div.className='news-item';
+                const img=document.createElement('img'); img.className='news-image'; img.src=item.image;
+                img.onclick=()=>openImageSelector(index); // смена картинки
+                const contentDiv=document.createElement('div'); contentDiv.className='container-sm';
+                const title=document.createElement('input'); title.className='form-control'; title.value=item.title;
+                const date=document.createElement('input'); date.className='form-control'; date.type='date'; date.value=item.date.split('T')[0];
+                const text=document.createElement('textarea'); text.className='form-control'; text.value=item.content;
+
+                // const id=document.createElement('input'); id.value=item.ID; id.disabled=true;
+                const saveBtn=document.createElement('button'); saveBtn.className='btn btn-outline-primary'; saveBtn.textContent='Сохранить';
+                saveBtn.onclick=()=>saveNews(item.ID,title.value,text.value,date.value,currentEditImage||item.image);
+
+                const deleteBtn=document.createElement('button'); deleteBtn.className='btn btn-outline-danger'; deleteBtn.textContent='Удалить';
+                deleteBtn.onclick=()=>deleteNews(item.ID);
+
+                contentDiv.appendChild(title);
+                contentDiv.appendChild(date);
+                contentDiv.appendChild(text);
+                // contentDiv.appendChild(id);
+                contentDiv.appendChild(saveBtn);
+                contentDiv.appendChild(deleteBtn);
+                div.appendChild(img);
+                div.appendChild(contentDiv);
+                newsContainer.appendChild(div);
+            });
+        }catch(err){ newsContainer.innerHTML='<div>Ошибка загрузки новостей</div>'; }
+    }
+
+    // --- Функции работы с сервером ---
+    async function saveNews(id,title,content,date,image){
+        try{
+            const res=await fetch('http://localhost:8081/news/'+id,{
+                method:'PUT',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({id,title,content,date,image})
+            });
+            if (!res.ok) {
+                const message = `An error occurred: ${res.status}`;
+                throw new Error(message);
+            }
+            currentEditImage='';
+            await loadNews();
+        }catch(error)
+        {
+            console.error('Fetch error:', error);
+            alert('Ошибка при сохранении');
+            throw error; // Re-throw if necessary
+        }
+    }
+
+    async function deleteNews(id){
+        if(!confirm('Удалить новость?')) return;
+        try{
+            const res=await fetch('http://localhost:8081/news/'+id,{
+                method:'DELETE',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({id})
+            });
+            if(!res.ok) throw new Error();
+            await loadNews();
+        }catch{ alert('Ошибка при удалении'); }
+    }
+
+    // --- Инициализация ---
+    loadNews();
+</script>
+</body>
+</html>
