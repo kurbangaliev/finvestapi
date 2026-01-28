@@ -14,6 +14,14 @@ func UpdateUser(user models.User) error {
 	if err != nil {
 		return err
 	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
 	user.UpdatedAt = time.Now()
 	result := db.Updates(&user)
 	if result.Error != nil {
@@ -28,6 +36,14 @@ func DeleteUser(id uint) error {
 	if err != nil {
 		return err
 	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
 	user := models.User{
 		Model: gorm.Model{
 			ID: id,
@@ -46,6 +62,14 @@ func CreateDefaultUser() error {
 	if err != nil {
 		return err
 	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
 
 	var users []models.User
 	result := db.Find(&users, "login = ?", "admin")
@@ -71,6 +95,14 @@ func FindUserByLogin(login string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
 	var users []models.User
 	result := db.Find(&users)
 	if result.Error != nil {

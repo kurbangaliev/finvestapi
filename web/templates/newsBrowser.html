@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Администрирование новостей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/assets/styles/admin.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="/assets/styles/admin.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
@@ -45,6 +44,9 @@
 
     async function loadNews(){
         try{
+            const dislike = 0;
+            const like = 1;
+            const userId = 0;
             const res = await fetch('http://localhost:8081/api/v1/news/');
             const newsList = await res.json();
             newsContainer.innerHTML='';
@@ -59,6 +61,7 @@
                 const mediaLink=document.createElement('input'); mediaLink.className='form-control'; mediaLink.value=item.mediaLink;
                 const downloadLink=document.createElement('input'); downloadLink.className='form-control'; downloadLink.value=item.downloadLink;
                 const statusId=document.createElement('select'); statusId.className='form-control'; statusId.value=item.statusId;
+                const newsId=document.createElement('input'); newsId.className='form-control'; newsId.value=item.ID; newsId.disabled=true;
 
                 const saveBtn=document.createElement('button'); saveBtn.className='btn btn-outline-primary'; saveBtn.textContent='Сохранить';
                 saveBtn.onclick=()=>saveNews(item.ID,title.value,messageDate.value,message.value,type.value,mediaLink.value,downloadLink.value,statusId.value,item.authorId);
@@ -66,13 +69,30 @@
                 const deleteBtn=document.createElement('button'); deleteBtn.className='btn btn-outline-danger'; deleteBtn.textContent='Удалить';
                 deleteBtn.onclick=()=>deleteNews(item.ID);
 
+                let space = document.createTextNode(" ");
+                const likeBtn=document.createElement('img'); likeBtn.src="assets/icons/like.svg"; likeBtn.className='news-like-sm';
+                likeBtn.onclick=()=>likeNews(item.ID, userId, like);
+                const dislikeBtn=document.createElement('img'); dislikeBtn.src="assets/icons/dislike.svg"; dislikeBtn.className='news-like-sm';
+                dislikeBtn.onclick=()=>likeNews(item.ID, userId, dislike);
+                const viewBtn=document.createElement('img'); viewBtn.src="assets/icons/view.svg"; viewBtn.className='news-like-sm';
+                viewBtn.onclick=()=>viewNews(item.ID, userId);
+
                 contentDiv.appendChild(title);
                 contentDiv.appendChild(messageDate);
                 contentDiv.appendChild(message);
                 contentDiv.appendChild(type);
+                contentDiv.appendChild(mediaLink);
+                contentDiv.appendChild(downloadLink);
+                contentDiv.appendChild(statusId);
+                contentDiv.appendChild(newsId)
 
                 contentDiv.appendChild(saveBtn);
                 contentDiv.appendChild(deleteBtn);
+                contentDiv.appendChild(likeBtn);
+                contentDiv.appendChild(space);
+                contentDiv.appendChild(dislikeBtn);
+                contentDiv.appendChild(space);
+                contentDiv.appendChild(viewBtn)
                 div.appendChild(contentDiv);
                 newsContainer.appendChild(div);
             });
@@ -111,6 +131,46 @@
             if(!res.ok) throw new Error();
             await loadNews();
         }catch{ alert('Ошибка при удалении'); }
+    }
+
+    async function likeNews(newsId,userId,type){
+        try{
+            const res=await fetch('http://localhost:8081/api/v1/news/like/',{
+                method:'PUT',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({newsId,userId,type})
+            });
+            if (!res.ok) {
+                const message = `An error occurred: ${res.status}`;
+                throw new Error(message);
+            }
+            await loadNews();
+        }catch(error)
+        {
+            console.error('Fetch error:', error);
+            alert('Ошибка при сохранении');
+            throw error; // Re-throw if necessary
+        }
+    }
+
+    async function viewNews(newsId,userId){
+        try{
+            const res=await fetch('http://localhost:8081/api/v1/news/view/',{
+                method:'PUT',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({newsId,userId})
+            });
+            if (!res.ok) {
+                const message = `An error occurred: ${res.status}`;
+                throw new Error(message);
+            }
+            await loadNews();
+        }catch(error)
+        {
+            console.error('Fetch error:', error);
+            alert('Ошибка при сохранении');
+            throw error; // Re-throw if necessary
+        }
     }
 
     // --- Инициализация ---

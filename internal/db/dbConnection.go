@@ -33,6 +33,16 @@ func DbConnection() (*gorm.DB, error) {
 
 func AutoMigrate() error {
 	db, err := DbConnection()
+
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+
 	if err != nil {
 		log.Fatal(err)
 		return err

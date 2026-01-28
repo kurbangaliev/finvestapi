@@ -36,6 +36,10 @@ func main() {
 	apiV1.HandleFunc("/news/{id}", handlers.HandleEditObject[models.News]).Methods("PUT")
 	apiV1.HandleFunc("/news/", handlers.HandleGetObjects[models.News]).Methods("GET")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
+	//LikeNews and Dislike
+	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
 	////manager handlers
 	//r.HandleFunc("/managers/", handlers.HandleAddManager).Methods("POST")
 	//r.HandleFunc("/managers/{id}", handlers.HandleEditManagers).Methods("PUT")
