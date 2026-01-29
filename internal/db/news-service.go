@@ -5,6 +5,28 @@ import (
 	"log"
 )
 
+func LoadAllNews() ([]models.News, error) {
+	var items []models.News
+
+	db, err := DbConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sqlDB.Close()
+
+	result := db.Order("message_date DESC").Find(&items)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+
+	return items, nil
+}
+
 func LikeNews(item models.NewsLike) error {
 	db, err := DbConnection()
 	if err != nil {

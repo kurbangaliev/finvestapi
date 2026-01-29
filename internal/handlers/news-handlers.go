@@ -4,8 +4,22 @@ import (
 	"encoding/json"
 	"finvestapi/internal/db"
 	"finvestapi/internal/models"
+	"log"
 	"net/http"
 )
+
+// HandleAllNews GET /news/
+func HandleAllNews(w http.ResponseWriter, r *http.Request) {
+	items, err := db.LoadAllNews()
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(`{"error": "` + err.Error() + `"}`)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(items)
+}
 
 // HandleLikeNews PUT /news/like/ /news/dislike/
 func HandleLikeNews(w http.ResponseWriter, r *http.Request) {

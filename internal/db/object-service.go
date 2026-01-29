@@ -77,13 +77,11 @@ func UpdateObject[T comparable](item T) error {
 	if err != nil {
 		return err
 	}
-	// Get the underlying *sql.DB connection pool
+
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Defer the closing of the underlying connection pool
 	defer sqlDB.Close()
 
 	result := db.Updates(&item)
