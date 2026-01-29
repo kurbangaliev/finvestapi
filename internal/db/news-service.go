@@ -2,6 +2,7 @@ package db
 
 import (
 	"finvestapi/internal/models"
+	"fmt"
 	"log"
 )
 
@@ -43,7 +44,7 @@ func LikeNews(item models.NewsLike) error {
 
 	result := db.Raw("CALL public.sp_likenews(?, ?, ?)", item.NewsId, item.UserId, item.Type).Scan(&struct{}{})
 	if result.Error != nil {
-		log.Fatal("Error calling stored procedure:", result.Error)
+		log.Printf("Error calling stored procedure:", result.Error)
 	}
 
 	return nil
@@ -65,7 +66,7 @@ func ViewNews(item models.NewsViewing) error {
 
 	result := db.Raw("CALL public.sp_viewnews(?, ?)", item.NewsId, item.UserId).Scan(&struct{}{})
 	if result.Error != nil {
-		log.Fatal("Error calling stored procedure:", result.Error)
+		log.Printf("Error calling stored procedure:", result.Error)
 	}
 
 	return nil
@@ -88,13 +89,13 @@ func GetLikesView(id int) (models.CallProcedureResult, error) {
 	var callResult models.CallProcedureResult
 	result := db.Raw("CALL public.sp_getlikesview(?)", id).Scan(&callResult)
 	if result.Error != nil {
-		log.Fatal("Error calling stored procedure:", result.Error)
+		log.Printf("Error calling stored procedure:", result.Error)
 	}
 
 	return callResult, nil
 }
 
-func GetNewsAnalytics(id int) (models.NewsAnalytics, error) {
+func GetNewsAnalytics(id int) (models.News, error) {
 	db, err := DbConnection()
 	if err != nil {
 		log.Fatal(err)
@@ -108,11 +109,11 @@ func GetNewsAnalytics(id int) (models.NewsAnalytics, error) {
 	// Defer the closing of the underlying connection pool
 	defer sqlDB.Close()
 
-	var newsAnalytics models.NewsAnalytics
-	result := db.Raw("select * from sp_getnewsanalytics(?)", id).Scan(&newsAnalytics)
-	if result.Error != nil {
-		log.Fatal("Error calling stored function:", result.Error)
+	var newsItem models.News
+	query := fmt.Sprintf("SELECT id, liked, disliked, view_count FROM news WHERE id = %d", id)
+	err = db.Raw(query).Scan(&newsItem).Error
+	if err != nil {
+		return models.News{}, err
 	}
-
-	return newsAnalytics, nil
+	return newsItem, nil
 }

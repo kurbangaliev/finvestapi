@@ -38,7 +38,7 @@ type NewsViewing struct {
 }
 
 type NewsAnalytics struct {
-	NewsId   int `gorm:"default:0" json:"newsId"`
+	NewsId   int `gorm:"default:0" json:"newsid"`
 	Liked    int `gorm:"default:0" json:"liked"`
 	Disliked int `gorm:"default:0" json:"disliked"`
 	Viewed   int `gorm:"default:0" json:"viewed"`
