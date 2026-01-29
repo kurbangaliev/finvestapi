@@ -5,7 +5,7 @@
 -- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
 -- Dumped by pg_dump version 18.1
 
--- Started on 2026-01-29 04:02:58 UTC
+-- Started on 2026-01-29 06:19:33 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,11 +19,29 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 239 (class 1255 OID 16461)
--- Name: sp_likenews(bigint, bigint, bigint); Type: PROCEDURE; Schema: public; Owner: postgres
+-- TOC entry 228 (class 1255 OID 16475)
+-- Name: sp_getnewsanalytics(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE PROCEDURE public.sp_likenews(IN p_newsid bigint, IN p_userid bigint, IN p_type bigint)
+CREATE FUNCTION public.sp_getnewsanalytics(p_newsid integer) RETURNS TABLE(newsid bigint, liked bigint, disliked bigint, viewed bigint)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY SELECT n.id, n.liked, n.disliked, n.view_count
+    FROM news n
+    WHERE n.id = p_newsId;
+END;
+$$;
+
+
+ALTER FUNCTION public.sp_getnewsanalytics(p_newsid integer) OWNER TO postgres;
+
+--
+-- TOC entry 242 (class 1255 OID 16473)
+-- Name: sp_likenews(integer, integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
+--
+
+CREATE PROCEDURE public.sp_likenews(IN p_newsid integer, IN p_userid integer, IN p_type integer)
     LANGUAGE plpgsql
     AS $$
 declare
@@ -38,6 +56,7 @@ begin
  if (v_count = 0) then
  	insert into news_likes(created_at, updated_at, news_id, user_id, type)
 	 values (v_event_time, v_event_time, p_newsId, p_userId, p_type);
+	call sp_viewnews(p_newsid, p_userid);
  else
  	update news_likes
 	 	set updated_at = v_event_time,
@@ -47,22 +66,13 @@ begin
  end if;
 
  CALL public.sp_updateanalyticslike(p_newsid);
-
  COMMIT;
+
 end;
 $$;
 
 
-ALTER PROCEDURE public.sp_likenews(IN p_newsid bigint, IN p_userid bigint, IN p_type bigint) OWNER TO postgres;
-
---
--- TOC entry 3503 (class 0 OID 0)
--- Dependencies: 239
--- Name: PROCEDURE sp_likenews(IN p_newsid bigint, IN p_userid bigint, IN p_type bigint); Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON PROCEDURE public.sp_likenews(IN p_newsid bigint, IN p_userid bigint, IN p_type bigint) IS 'sp_LikeNews';
-
+ALTER PROCEDURE public.sp_likenews(IN p_newsid integer, IN p_userid integer, IN p_type integer) OWNER TO postgres;
 
 --
 -- TOC entry 241 (class 1255 OID 16467)
@@ -332,7 +342,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 3311 (class 2604 OID 16392)
+-- TOC entry 3312 (class 2604 OID 16392)
 -- Name: news id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -340,7 +350,7 @@ ALTER TABLE ONLY public.news ALTER COLUMN id SET DEFAULT nextval('public.news_id
 
 
 --
--- TOC entry 3318 (class 2604 OID 16407)
+-- TOC entry 3319 (class 2604 OID 16407)
 -- Name: news_likes id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -348,7 +358,7 @@ ALTER TABLE ONLY public.news_likes ALTER COLUMN id SET DEFAULT nextval('public.n
 
 
 --
--- TOC entry 3322 (class 2604 OID 16420)
+-- TOC entry 3323 (class 2604 OID 16420)
 -- Name: news_viewings id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -356,7 +366,7 @@ ALTER TABLE ONLY public.news_viewings ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3329 (class 2604 OID 16441)
+-- TOC entry 3330 (class 2604 OID 16441)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -364,7 +374,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 3490 (class 0 OID 16386)
+-- TOC entry 3491 (class 0 OID 16386)
 -- Dependencies: 220
 -- Data for Name: news; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -383,7 +393,7 @@ COPY public.news (id, created_at, updated_at, deleted_at, title, message_date, m
 
 
 --
--- TOC entry 3495 (class 0 OID 16430)
+-- TOC entry 3496 (class 0 OID 16430)
 -- Dependencies: 225
 -- Data for Name: news_analytics; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -393,13 +403,12 @@ COPY public.news_analytics (news_id, liked, disliked, viewed) FROM stdin;
 
 
 --
--- TOC entry 3492 (class 0 OID 16404)
+-- TOC entry 3493 (class 0 OID 16404)
 -- Dependencies: 222
 -- Data for Name: news_likes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.news_likes (id, created_at, updated_at, deleted_at, news_id, user_id, type) FROM stdin;
-8	2026-01-28 22:20:48.252113+00	2026-01-28 23:27:43.987997+00	\N	5	0	1
 5	2026-01-28 22:20:28.257499+00	2026-01-28 23:39:50.25529+00	\N	2	0	0
 11	2026-01-29 00:18:45.399881+00	2026-01-29 00:19:22.052708+00	\N	8	3	1
 7	2026-01-28 22:20:46.990215+00	2026-01-28 22:20:46.990215+00	\N	4	0	1
@@ -407,11 +416,12 @@ COPY public.news_likes (id, created_at, updated_at, deleted_at, news_id, user_id
 10	2026-01-28 22:20:50.287143+00	2026-01-28 22:20:50.287143+00	\N	7	0	1
 6	2026-01-28 22:20:46.285595+00	2026-01-28 22:26:40.82416+00	\N	3	0	1
 12	2026-01-29 00:31:34.819437+00	2026-01-29 00:31:47.011789+00	\N	8	0	0
+8	2026-01-28 22:20:48.252113+00	2026-01-29 05:55:19.613609+00	\N	5	0	1
 \.
 
 
 --
--- TOC entry 3494 (class 0 OID 16417)
+-- TOC entry 3495 (class 0 OID 16417)
 -- Dependencies: 224
 -- Data for Name: news_viewings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -426,7 +436,7 @@ COPY public.news_viewings (id, created_at, updated_at, deleted_at, news_id, user
 
 
 --
--- TOC entry 3497 (class 0 OID 16438)
+-- TOC entry 3498 (class 0 OID 16438)
 -- Dependencies: 227
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -473,7 +483,7 @@ SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
--- TOC entry 3335 (class 2606 OID 16413)
+-- TOC entry 3336 (class 2606 OID 16413)
 -- Name: news_likes news_likes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -482,7 +492,7 @@ ALTER TABLE ONLY public.news_likes
 
 
 --
--- TOC entry 3332 (class 2606 OID 16400)
+-- TOC entry 3333 (class 2606 OID 16400)
 -- Name: news news_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -491,7 +501,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3338 (class 2606 OID 16428)
+-- TOC entry 3339 (class 2606 OID 16428)
 -- Name: news_viewings news_viewings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -500,7 +510,7 @@ ALTER TABLE ONLY public.news_viewings
 
 
 --
--- TOC entry 3341 (class 2606 OID 16446)
+-- TOC entry 3342 (class 2606 OID 16446)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -509,7 +519,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3330 (class 1259 OID 16401)
+-- TOC entry 3331 (class 1259 OID 16401)
 -- Name: idx_news_deleted_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -517,7 +527,7 @@ CREATE INDEX idx_news_deleted_at ON public.news USING btree (deleted_at);
 
 
 --
--- TOC entry 3333 (class 1259 OID 16414)
+-- TOC entry 3334 (class 1259 OID 16414)
 -- Name: idx_news_likes_deleted_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -525,7 +535,7 @@ CREATE INDEX idx_news_likes_deleted_at ON public.news_likes USING btree (deleted
 
 
 --
--- TOC entry 3336 (class 1259 OID 16429)
+-- TOC entry 3337 (class 1259 OID 16429)
 -- Name: idx_news_viewings_deleted_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -533,17 +543,15 @@ CREATE INDEX idx_news_viewings_deleted_at ON public.news_viewings USING btree (d
 
 
 --
--- TOC entry 3339 (class 1259 OID 16451)
+-- TOC entry 3340 (class 1259 OID 16451)
 -- Name: idx_users_deleted_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX idx_users_deleted_at ON public.users USING btree (deleted_at);
 
 
--- Completed on 2026-01-29 04:02:58 UTC
+-- Completed on 2026-01-29 06:19:33 UTC
 
 --
 -- PostgreSQL database dump complete
 --
-
-
