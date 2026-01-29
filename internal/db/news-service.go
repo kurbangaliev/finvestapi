@@ -93,3 +93,26 @@ func GetLikesView(id int) (models.CallProcedureResult, error) {
 
 	return callResult, nil
 }
+
+func GetNewsAnalytics(id int) (models.NewsAnalytics, error) {
+	db, err := DbConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+
+	var newsAnalytics models.NewsAnalytics
+	result := db.Raw("select * from sp_getnewsanalytics(?)", id).Scan(&newsAnalytics)
+	if result.Error != nil {
+		log.Fatal("Error calling stored function:", result.Error)
+	}
+
+	return newsAnalytics, nil
+}

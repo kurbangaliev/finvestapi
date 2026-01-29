@@ -49,7 +49,6 @@ func HandleGetLikeNews(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid id", http.StatusBadRequest)
 		return
 	}
-	log.Printf("delete %d", id)
 
 	count, err := db.GetLikesView(id)
 	if err != nil {
@@ -77,4 +76,25 @@ func HandleViewNews(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("News updated"))
+}
+
+// HandleGetLikeNews GET /news/analytics/{id}
+func HandleGetNewsAnalytics(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	strId := vars["id"]
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	item, err := db.GetNewsAnalytics(id)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(`{"error": "` + err.Error() + `"}`)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(item)
 }

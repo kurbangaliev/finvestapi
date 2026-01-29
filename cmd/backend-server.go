@@ -41,6 +41,7 @@ func main() {
 	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
+	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
 	////manager handlers
 	//r.HandleFunc("/managers/", handlers.HandleAddManager).Methods("POST")
 	//r.HandleFunc("/managers/{id}", handlers.HandleEditManagers).Methods("PUT")
