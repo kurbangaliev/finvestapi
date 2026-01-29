@@ -70,3 +70,26 @@ func ViewNews(item models.NewsViewing) error {
 
 	return nil
 }
+
+func GetLikesView(id int) (models.CallProcedureResult, error) {
+	db, err := DbConnection()
+	if err != nil {
+		return models.CallProcedureResult{}, err
+	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+
+	var callResult models.CallProcedureResult
+	result := db.Raw("CALL public.sp_getlikesview(?)", id).Scan(&callResult)
+	if result.Error != nil {
+		log.Fatal("Error calling stored procedure:", result.Error)
+	}
+
+	return callResult, nil
+}

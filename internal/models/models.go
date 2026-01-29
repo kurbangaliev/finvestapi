@@ -19,6 +19,9 @@ type News struct {
 	DownloadLink string `gorm:"size:255" json:"downloadLink"`
 	StatusId     int    `gorm:"default:1" json:"statusId"`
 	AuthorId     int    `gorm:"default:0" json:"authorId"`
+	Liked        int    `gorm:"default:0" json:"liked"`
+	Disliked     int    `gorm:"default:0" json:"disliked"`
+	ViewCount    int    `gorm:"default:0" json:"viewCount"`
 }
 
 type NewsLike struct {
@@ -46,4 +49,8 @@ type User struct {
 	Login    string `gorm:"size:255" json:"login"`
 	Password string `gorm:"size:255" json:"password"`
 	Role     string `gorm:"size:255" json:"role"`
+}
+
+type CallProcedureResult struct {
+	value int `gorm:"column:value" json:"value"`
 }

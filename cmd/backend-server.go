@@ -19,15 +19,8 @@ func main() {
 		log.Println(err)
 	}
 
-	//c := cors.New(cors.Options{
-	//	AllowedOrigins:   []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080", "http://192.168.111.103"},
-	//	AllowCredentials: true,
-	//	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	//	AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
-	//	Debug:            false,
-	//})
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://cabinet.finvest.kz", "http://localhost:8080"},
+		AllowedOrigins:   []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080", "http://192.168.111.103"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
@@ -45,6 +38,7 @@ func main() {
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
 	//LikeNews and Dislike
 	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
 	////manager handlers
@@ -59,5 +53,4 @@ func main() {
 
 	handler := c.Handler(mainRouter)
 	log.Fatal(http.ListenAndServe(":8081", handler))
-	//log.Fatal(http.ListenAndServe(":8081", mainRouter))
 }

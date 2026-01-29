@@ -6,6 +6,9 @@ import (
 	"finvestapi/internal/models"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 // HandleAllNews GET /news/
@@ -35,6 +38,28 @@ func HandleLikeNews(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("News LikeNews updated"))
+}
+
+// HandleGetLikeNews GET /news/{id}
+func HandleGetLikeNews(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	strId := vars["id"]
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+	log.Printf("delete %d", id)
+
+	count, err := db.GetLikesView(id)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(`{"error": "` + err.Error() + `"}`)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(count)
 }
 
 // HandleViewNews PUT /news/view/
