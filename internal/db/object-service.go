@@ -73,6 +73,7 @@ func DeleteObject[T comparable](item T) error {
 }
 
 func UpdateObject[T comparable](item T) error {
+	log.Printf("UpdateObject. %v", item)
 	db, err := DbConnection()
 	if err != nil {
 		return err

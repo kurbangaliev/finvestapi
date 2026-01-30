@@ -33,7 +33,7 @@ func HandleAddObject[T comparable](w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Add Item: %v", item)
-	err := db.SaveObject(item)
+	err := db.SaveObject[T](item)
 	if err != nil {
 		log.Println(err)
 	}
@@ -44,6 +44,8 @@ func HandleAddObject[T comparable](w http.ResponseWriter, r *http.Request) {
 
 // HandleEditObject PUT /news/{id}
 func HandleEditObject[T comparable](w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleEditObject")
+
 	var item T
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -60,6 +62,8 @@ func HandleEditObject[T comparable](w http.ResponseWriter, r *http.Request) {
 
 // HandleDeleteObject DELETE /news/{id}
 func HandleDeleteObject[T comparable](w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleDeleteObject")
+
 	var item T
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)

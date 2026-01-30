@@ -1556,4 +1556,12 @@ body {
         }
     }
 }
+.zoom-image {
+    width: 26px; /* Исходный размер */
+    transition: transform 0.3s ease; /* Плавность */
+}
+
+.zoom-image:hover {
+    transform: scale(1.2); /* Увеличение на 20% */
+}
 @import 'media';
