@@ -19,8 +19,9 @@ func main() {
 		log.Println(err)
 	}
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080", "http://192.168.111.103", "https://localhost:7443", "https://192.168.111.103"},
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080",
+			"http://192.168.111.103", "https://localhost:7443", "https://192.168.111.103", "https://192.168.111.11:7443"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
@@ -52,7 +53,7 @@ func main() {
 
 	log.Println("🚀 Backend server started on https://localhost:8081")
 
-	handler := c.Handler(mainRouter)
+	handler := corsHandler.Handler(mainRouter)
 	//log.Fatal(http.ListenAndServe(":8081", handler))
 	log.Fatal(http.ListenAndServeTLS(":8081",
 		"certs/finvestapi.crt",
