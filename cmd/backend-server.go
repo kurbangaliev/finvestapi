@@ -25,7 +25,7 @@ func main() {
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
-		Debug:            false,
+		Debug:            true,
 	})
 
 	mainRouter := mux.NewRouter()
