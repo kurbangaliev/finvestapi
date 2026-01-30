@@ -27,7 +27,7 @@ async function loadNews(){
         const dislike = 0;
         const like = 1;
         const userId = 0;
-        const res = await fetch('http://localhost:8081/api/v1/news/');
+        const res = await fetch('https://localhost:8081/api/v1/news/');
         const newsList = await res.json();
         newsContainer.innerHTML='';
         newsList.forEach((item,index)=>{
@@ -112,7 +112,7 @@ async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadL
     const statusId = Number(statusIdStr);
 
     try{
-        const res=await fetch('http://localhost:8081/api/v1/news/'+id,{
+        const res=await fetch('https://localhost:8081/api/v1/news/'+id,{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId,liked,disliked,viewCount})
@@ -133,7 +133,7 @@ async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadL
 async function deleteNews(id){
     if(!confirm('Удалить новость?')) return;
     try{
-        const res=await fetch('http://localhost:8081/api/v1/news/'+id,{
+        const res=await fetch('https://localhost:8081/api/v1/news/'+id,{
             method:'DELETE',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({id})
@@ -145,7 +145,7 @@ async function deleteNews(id){
 
 async function likeNews(newsId,userId,type){
     try{
-        const res=await fetch('http://localhost:8081/api/v1/news/like/',{
+        const res=await fetch('https://localhost:8081/api/v1/news/like/',{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({newsId,userId,type})
@@ -165,7 +165,7 @@ async function likeNews(newsId,userId,type){
 
 async function viewNews(newsId,userId){
     try{
-        const res=await fetch('http://localhost:8081/api/v1/news/view/',{
+        const res=await fetch('https://localhost:8081/api/v1/news/view/',{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({newsId,userId})
@@ -217,7 +217,7 @@ async function createNews(){
 
     submitBtn.disabled = true;
     try {
-        const res = await fetch('http://localhost:8081/api/v1/news/', {
+        const res = await fetch('https://localhost:8081/api/v1/news/', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify(payload)

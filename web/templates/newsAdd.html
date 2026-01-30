@@ -65,10 +65,10 @@
             <label for="type">Тип</label>
             <select class="form-control" id="type" required>
                 <option selected disabled hidden="hidden">Выберите тип новости</option>
-                <option value=1>YouTube</option>
-                <option value=2>Image</option>
-                <option value=3>PDF</option>
-                <option value=4>Text</option>
+                <option value="1">YouTube</option>
+                <option value="2">Image</option>
+                <option value="3">PDF</option>
+                <option value="4">Text</option>
             </select>
         </div>
         <div class="mb-3">
@@ -83,16 +83,12 @@
             <label for="statusId">Видимость</label>
             <select class="form-control" id="statusId" required>
                 <option selected disabled hidden="hidden">Установите видимость новости</option>
-                <option value=0>Нет</option>
-                <option value=1>Да</option>
+                <option value="0">Нет</option>
+                <option value="1">Да</option>
             </select>
         </div>
         <button type="button" class="btn btn-primary" id="submitBtn" onclick="createNews();">Сохранить</button>
     </div>
 </main>
-
-<script>
-
-</script>
 </body>
 </html>
