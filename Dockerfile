@@ -36,7 +36,7 @@ RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 USER appuser
 
 # Expose the port your application listens on
-EXPOSE 8443
+EXPOSE 7443
 EXPOSE 8081
 
 # Command to run the executable when the container starts
