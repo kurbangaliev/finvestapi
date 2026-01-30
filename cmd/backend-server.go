@@ -20,7 +20,7 @@ func main() {
 	}
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080", "http://192.168.111.103", "https://localhost:8443"},
+		AllowedOrigins:   []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080", "http://192.168.111.103", "https://localhost:7443"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},

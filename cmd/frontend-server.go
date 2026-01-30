@@ -58,8 +58,8 @@ func main() {
 	//log.Println("🚀 Frontend Server started on http://localhost:8080")
 	//log.Fatal(http.ListenAndServe(":8080", r))
 
-	log.Println("🚀 Frontend Server started on https://localhost:8443")
-	log.Fatal(http.ListenAndServeTLS(":8443",
+	log.Println("🚀 Frontend Server started on https://localhost:7443")
+	log.Fatal(http.ListenAndServeTLS(":7443",
 		"certs/finvestapi.crt",
 		"certs/finvestapi.key",
 		r))
