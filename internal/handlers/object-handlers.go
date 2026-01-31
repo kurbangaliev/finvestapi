@@ -68,12 +68,14 @@ func HandleDeleteObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	var item T
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		bodyStr, _ := io.ReadAll(r.Body)
+		log.Println("Delete Item:", string(bodyStr))
 		http.Error(w, "Invalid JSON. "+string(bodyStr), http.StatusBadRequest)
 		return
 	}
 
 	err := db.DeleteObject(item)
 	if err != nil {
+		log.Printf("Failed to delete item: %s\n", err.Error())
 		http.Error(w, "Failed to delete item", http.StatusInternalServerError)
 	}
 
