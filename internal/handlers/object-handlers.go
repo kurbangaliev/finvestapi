@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"finvestapi/internal/db"
+	"io"
 	"log"
 	"net/http"
 )
@@ -66,7 +67,8 @@ func HandleDeleteObject[T comparable](w http.ResponseWriter, r *http.Request) {
 
 	var item T
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		bodyStr, _ := io.ReadAll(r.Body)
+		http.Error(w, "Invalid JSON. "+string(bodyStr), http.StatusBadRequest)
 		return
 	}
 
