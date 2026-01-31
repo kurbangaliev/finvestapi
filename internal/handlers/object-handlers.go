@@ -33,13 +33,13 @@ func HandleAddObject[T comparable](w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Add Item: %v", item)
-	err := db.SaveObject[T](item)
+	item, err := db.SaveObject[T](item)
 	if err != nil {
 		log.Println(err)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("News saved"))
+	json.NewEncoder(w).Encode(item)
 }
 
 // HandleEditObject PUT /news/{id}

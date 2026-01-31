@@ -29,7 +29,7 @@ func SelectAll[T comparable]() ([]T, error) {
 	return items, nil
 }
 
-func SaveObject[T comparable](item T) error {
+func SaveObject[T comparable](item T) (T, error) {
 	db, err := DbConnection()
 	// Get the underlying *sql.DB connection pool
 	sqlDB, err := db.DB()
@@ -40,14 +40,14 @@ func SaveObject[T comparable](item T) error {
 	// Defer the closing of the underlying connection pool
 	defer sqlDB.Close()
 	if err != nil {
-		return err
+		return item, err
 	}
 	result := db.Create(&item)
 	if result.Error != nil {
 		log.Println(result.Error)
-		return result.Error
+		return item, result.Error
 	}
-	return nil
+	return item, nil
 }
 
 func DeleteObject[T comparable](item T) error {
