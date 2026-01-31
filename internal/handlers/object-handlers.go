@@ -25,7 +25,7 @@ func HandleGetObjects[T comparable](w http.ResponseWriter, r *http.Request) {
 // HandleAddObject POST /news
 func HandleAddObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	log.Println("HandleAddObject")
-	log.Println(r.Body)
+
 	var item T
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		log.Println(err)
@@ -76,5 +76,5 @@ func HandleDeleteObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("News deleted"))
+	w.Write([]byte(`{"message": "Item deleted"}`))
 }
