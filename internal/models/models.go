@@ -17,7 +17,7 @@ type News struct {
 	Type         int    `gorm:"default:1" json:"type"`
 	MediaLink    string `gorm:"size:255" json:"mediaLink"`
 	DownloadLink string `gorm:"size:255" json:"downloadLink"`
-	StatusId     int    `gorm:"default:1" json:"statusId"`
+	StatusId     int    `gorm:"default:0" json:"statusId"`
 	AuthorId     int    `gorm:"default:0" json:"authorId"`
 	Liked        int    `gorm:"default:0" json:"liked"`
 	Disliked     int    `gorm:"default:0" json:"disliked"`
