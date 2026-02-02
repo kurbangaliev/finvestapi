@@ -39,8 +39,7 @@ func HandleGetObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	}
 
 	strBody := `{"id": ` + strId + `}`
-	err = json.Unmarshal([]byte(strBody), &item)
-	if err != nil {
+	if err = json.Unmarshal([]byte(strBody), &item); err != nil {
 		log.Printf("Get Item: %s", strBody)
 		http.Error(w, "Invalid JSON. "+string(strBody), http.StatusBadRequest)
 		return
