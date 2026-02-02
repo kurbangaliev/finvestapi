@@ -6,6 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 /* =================== Objects =================== */
@@ -26,15 +30,26 @@ func HandleGetObjects[T comparable](w http.ResponseWriter, r *http.Request) {
 // HandleGetObject GET /news/{id}
 func HandleGetObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	var item T
-	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-		bodyStr, _ := io.ReadAll(r.Body)
-		log.Println("Get Item:", string(bodyStr))
-		http.Error(w, "Invalid JSON. "+string(bodyStr), http.StatusBadRequest)
+
+	vars := mux.Vars(r)
+	strId := vars["id"]
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	strBody := `{"id": ` + strconv.Itoa(id) + `}`
+	reader := strings.NewReader(strBody)
+	if err := json.NewDecoder(reader).Decode(&item); err != nil {
+		//bodyStr, _ := io.ReadAll(r.Body)
+		log.Printf("Get Item: %s", strBody)
+		http.Error(w, "Invalid JSON. "+string(strBody), http.StatusBadRequest)
 		return
 	}
 
 	log.Printf("Get Item: %v\n", item)
-	item, err := db.Select[T](item)
+	item, err = db.Select[T](item)
 	if err != nil {
 		http.Error(w, "Failed to get item", http.StatusInternalServerError)
 	}
