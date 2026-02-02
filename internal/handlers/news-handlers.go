@@ -98,3 +98,35 @@ func HandleGetNewsAnalytics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(item)
 }
+
+// HandleAddNews POST /news/
+func HandleAddNews(w http.ResponseWriter, r *http.Request) {
+	var item models.News
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	item, err := db.SaveNews(item)
+	if err != nil {
+		http.Error(w, "Failed to update item", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("News added"))
+}
+
+// HandleEditNews PUT /news/{id}
+func HandleEditNews(w http.ResponseWriter, r *http.Request) {
+	var item models.News
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	item, err := db.UpdateNews(item)
+	if err != nil {
+		http.Error(w, "Failed to update item", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("News updated"))
+}

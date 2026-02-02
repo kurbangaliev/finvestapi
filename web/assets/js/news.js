@@ -45,11 +45,13 @@ async function loadNews(){
 
             const statusId=document.createElement('select'); statusId.className='form-control'; fillSelectStatus(statusId); statusId.value=item.statusId;
 
+            const pushNotification=document.createElement('select'); pushNotification.className='form-control'; fillSelectStatus(pushNotification); pushNotification.value=item.pushNotification;
+
             const newsId=document.createElement('input'); newsId.className='form-control'; newsId.value=item.ID; newsId.disabled=true;
 
             const saveBtn=document.createElement('button'); saveBtn.className='btn btn-outline-primary'; saveBtn.textContent='Сохранить';
             saveBtn.onclick=()=>saveNews(item.ID,title.value,messageDate.value,message.value,type.value,mediaLink.value,
-                downloadLink.value,statusId.value,item.authorId,item.liked,item.disliked,item.viewCount);
+                downloadLink.value,statusId.value,item.authorId,item.liked,item.disliked,item.viewCount,pushNotification.value);
 
             const deleteBtn=document.createElement('button'); deleteBtn.className='btn btn-outline-danger'; deleteBtn.textContent='Удалить';
             deleteBtn.onclick=()=>deleteNews(item.ID);
@@ -75,7 +77,8 @@ async function loadNews(){
             contentDiv.appendChild(mediaLink);
             contentDiv.appendChild(downloadLink);
             contentDiv.appendChild(statusId);
-            contentDiv.appendChild(newsId)
+            contentDiv.appendChild(pushNotification);
+            contentDiv.appendChild(newsId);
 
             contentDiv.appendChild(saveBtn);
             contentDiv.appendChild(deleteBtn);
@@ -107,15 +110,16 @@ function fillSelectStatus(selectElement){
     selectElement.appendChild(option);
 }
 
-async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadLink,statusIdStr,authorId,liked,disliked,viewCount){
+async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadLink,statusIdStr,authorId,liked,disliked,viewCount,pushNotificationStr){
     const type = Number(typeStr);
     const statusId = Number(statusIdStr);
+    const pushNotification = Number(pushNotificationStr);
 
     try{
         const res=await fetch('https://localhost:8081/api/v1/news/'+id,{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId,liked,disliked,viewCount})
+            body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId,liked,disliked,viewCount,pushNotification})
         });
         if (!res.ok) {
             const message = `An error occurred: ${res.status}`;
@@ -189,7 +193,7 @@ async function createNews(){
     // Отправка новости на сервер
     const title = document.getElementById('title').value.trim();
     const messageDate = document.getElementById('messageDate').value;
-    const message = htmlEncode(document.getElementById('message').value.trim());
+    const message = tinymce.get('message').getContent();
     const type = Number(document.getElementById('type').value);
     const mediaLink = document.getElementById('mediaLink').value.trim();
     const downloadLink = document.getElementById('downloadLink').value.trim();

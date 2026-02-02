@@ -33,12 +33,14 @@ func main() {
 	// --- Version 1 API ---
 	apiV1 := mainRouter.PathPrefix("/api/v1").Subrouter()
 	//news handlers
-	apiV1.HandleFunc("/news/", handlers.HandleAddObject[models.News]).Methods("POST")
-	apiV1.HandleFunc("/news/{id}", handlers.HandleEditObject[models.News]).Methods("PUT")
 	apiV1.HandleFunc("/news/", handlers.HandleAllNews).Methods("GET")
+	apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")
+	apiV1.HandleFunc("/news/", handlers.HandleAddNews).Methods("POST")
+	apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
 	//LikeNews and Dislike
-	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	//	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
 	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")

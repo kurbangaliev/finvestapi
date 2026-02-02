@@ -87,6 +87,14 @@
                 <option value="1">Да</option>
             </select>
         </div>
+        <div class="mb-3">
+            <label for="pushNotification">Отправлять уведомления</label>
+            <select class="form-control" id="pushNotification" required>
+                <option selected disabled hidden="hidden">Включите отправку уведомлений</option>
+                <option value="false">Нет</option>
+                <option value="true">Да</option>
+            </select>
+        </div>
         <button type="button" class="btn btn-primary" id="submitBtn" onclick="createNews();">Сохранить</button>
     </div>
 </main>

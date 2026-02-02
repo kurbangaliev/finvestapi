@@ -117,3 +117,49 @@ func GetNewsAnalytics(id int) (models.News, error) {
 	}
 	return newsItem, nil
 }
+
+func SaveNews(item models.News) (models.News, error) {
+	db, err := DbConnection()
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+	if err != nil {
+		return item, err
+	}
+	result := db.Create(&item)
+	db.Model(&item).Updates(map[string]interface{}{"push_notification": item.PushNotification, "status_id": item.StatusId})
+	if result.Error != nil {
+		log.Println(result.Error)
+		return item, result.Error
+	}
+	return item, nil
+}
+
+func UpdateNews(item models.News) (models.News, error) {
+	log.Println("UpdateNews")
+	log.Printf("Update Item: %v", item)
+	db, err := DbConnection()
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+	if err != nil {
+		return item, err
+	}
+	result := db.Updates(&item)
+	db.Model(&item).Updates(map[string]interface{}{"push_notification": item.PushNotification, "status_id": item.StatusId})
+	if result.Error != nil {
+		log.Println(result.Error)
+		return item, result.Error
+	}
+	return item, nil
+}

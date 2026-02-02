@@ -23,6 +23,26 @@ func HandleGetObjects[T comparable](w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(items)
 }
 
+// HandleGetObject GET /news/{id}
+func HandleGetObject[T comparable](w http.ResponseWriter, r *http.Request) {
+	var item T
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		bodyStr, _ := io.ReadAll(r.Body)
+		log.Println("Get Item:", string(bodyStr))
+		http.Error(w, "Invalid JSON. "+string(bodyStr), http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Get Item: %v\n", item)
+	item, err := db.Select[T](item)
+	if err != nil {
+		http.Error(w, "Failed to get item", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(item)
+}
+
 // HandleAddObject POST /news
 func HandleAddObject[T comparable](w http.ResponseWriter, r *http.Request) {
 	log.Println("HandleAddObject")
@@ -52,6 +72,7 @@ func HandleEditObject[T comparable](w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+	log.Printf("Edit Item: %v\n", item)
 	err := db.UpdateObject(item)
 	if err != nil {
 		http.Error(w, "Failed to update item", http.StatusInternalServerError)
