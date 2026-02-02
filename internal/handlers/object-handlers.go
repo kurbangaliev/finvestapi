@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -33,16 +32,23 @@ func HandleGetObject[T comparable](w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	strId := vars["id"]
-	id, err := strconv.Atoi(strId)
+	_, err := strconv.Atoi(strId)
 	if err != nil {
 		http.Error(w, "Invalid id", http.StatusBadRequest)
 		return
 	}
 
-	strBody := `{"id": ` + strconv.Itoa(id) + `}`
-	reader := strings.NewReader(strBody)
-	if err := json.NewDecoder(reader).Decode(&item); err != nil {
-		//bodyStr, _ := io.ReadAll(r.Body)
+	strBody := `{"id": ` + strId + `}`
+	//TODO можно использовать и reader и unmarshal
+	//reader := strings.NewReader(strBody)
+	//if err := json.NewDecoder(reader).Decode(&item); err != nil {
+	//	log.Printf("Get Item: %s", strBody)
+	//	http.Error(w, "Invalid JSON. "+string(strBody), http.StatusBadRequest)
+	//	return
+	//}
+
+	err = json.Unmarshal([]byte(strBody), &item)
+	if err != nil {
 		log.Printf("Get Item: %s", strBody)
 		http.Error(w, "Invalid JSON. "+string(strBody), http.StatusBadRequest)
 		return
