@@ -40,8 +40,8 @@ func main() {
 	apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
 	//LikeNews and Dislike
-	//	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
-	apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
+	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
 	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
