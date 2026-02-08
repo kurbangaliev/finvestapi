@@ -4,12 +4,21 @@ import (
 	"finvestapi/internal/db"
 	"finvestapi/internal/handlers"
 	"finvestapi/internal/models"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
+
+func generateApiHandlers[T comparable](r *mux.Router, apiModelUri string) {
+	r.HandleFunc(fmt.Sprintf("/%s/", apiModelUri), handlers.HandleAddObject[T]).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleEditObject[T]).Methods("PUT")
+	r.HandleFunc(fmt.Sprintf("/%s/", apiModelUri), handlers.HandleGetObjects[T]).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleGetObject[T]).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleDeleteObject[T]).Methods("DELETE")
+}
 
 func main() {
 	log.Println("Backend server is starting...")
@@ -32,13 +41,15 @@ func main() {
 
 	// --- Version 1 API ---
 	apiV1 := mainRouter.PathPrefix("/api/v1").Subrouter()
-	//news handlers
-	apiV1.HandleFunc("/news/", handlers.HandleAllNews).Methods("GET")
+	//enableNews handlers
 	apiV1.HandleFunc("/enableNews/", handlers.HandleEnableNews).Methods("GET")
-	apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")
-	apiV1.HandleFunc("/news/", handlers.HandleAddNews).Methods("POST")
-	apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
-	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
+	//news handlers
+	//apiV1.HandleFunc("/news/", handlers.HandleAllNews).Methods("GET")
+	//apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")
+	//apiV1.HandleFunc("/news/", handlers.HandleAddNews).Methods("POST")
+	//apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
+	//apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
+	generateApiHandlers[models.News](apiV1, "news")
 	//LikeNews and Dislike
 	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
 	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
