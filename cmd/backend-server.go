@@ -44,7 +44,12 @@ func main() {
 	//enableNews handlers
 	apiV1.HandleFunc("/enableNews/", handlers.HandleEnableNews).Methods("GET")
 	//news handlers
-	generateApiHandlers[models.News](apiV1, "news")
+	apiV1.HandleFunc("/news/", handlers.HandleAllNews).Methods("GET")
+	apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")
+	apiV1.HandleFunc("/news/", handlers.HandleAddNews).Methods("POST")
+	apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
+	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
+	//generateApiHandlers[models.News](apiV1, "news")
 	//LikeNews and Dislike
 	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
 	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
@@ -52,6 +57,11 @@ func main() {
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
+	////manager handlers
+	//r.HandleFunc("/managers/", handlers.HandleAddManager).Methods("POST")
+	//r.HandleFunc("/managers/{id}", handlers.HandleEditManagers).Methods("PUT")
+	//r.HandleFunc("/managers/", handlers.HandleGetManagers).Methods("GET")
+	//r.HandleFunc("/managers/{id}", handlers.HandleDeleteManager).Methods("DELETE")
 	//security handlers
 	mainRouter.HandleFunc("/login", handlers.HandleLogin).Methods("POST")
 
