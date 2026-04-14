@@ -99,5 +99,15 @@ func AutoMigrate() error {
 		}
 	}
 
+	err = db.AutoMigrate(&models.NewsGroup{})
+	if err != nil {
+		log.Fatal(err)
+		return &MigrateError{
+			Model:   "NewsGroup",
+			Message: err.Error(),
+			Err:     ErrAutoMigrate, // Wrap the sentinel error
+		}
+	}
+
 	return nil
 }
