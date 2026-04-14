@@ -21,6 +21,18 @@ function fillSelectType(selectElement){
     selectElement.appendChild(option);
 }
 
+function fillGroupType(selectElement){
+    let option = document.createElement('option');
+    option.value = "1";
+    option.textContent = "Новость";
+    selectElement.appendChild(option);
+
+    option = document.createElement('option');
+    option.value = "2";
+    option.textContent = "Акция";
+    selectElement.appendChild(option);
+}
+
 async function loadNews(){
     const newsContainer = document.getElementById('newsContainer');
     try{
@@ -47,11 +59,13 @@ async function loadNews(){
 
             const pushNotification=document.createElement('select'); pushNotification.className='form-control'; fillSelectStatus(pushNotification); pushNotification.value=item.pushNotification;
 
+            const groupId=document.createElement('select'); groupId.className='form-control'; fillGroupType(groupId); groupId.value=item.groupId;
+
             const newsId=document.createElement('input'); newsId.className='form-control'; newsId.value=item.ID; newsId.disabled=true;
 
             const saveBtn=document.createElement('button'); saveBtn.className='btn btn-outline-primary'; saveBtn.textContent='Сохранить';
             saveBtn.onclick=()=>saveNews(item.ID,title.value,messageDate.value,message.value,type.value,mediaLink.value,
-                downloadLink.value,statusId.value,item.authorId,item.liked,item.disliked,item.viewCount,pushNotification.value);
+                downloadLink.value,statusId.value,item.authorId,item.liked,item.disliked,item.viewCount,pushNotification.value, groupId.value);
 
             const deleteBtn=document.createElement('button'); deleteBtn.className='btn btn-outline-danger'; deleteBtn.textContent='Удалить';
             deleteBtn.onclick=()=>deleteNews(item.ID);
@@ -78,6 +92,7 @@ async function loadNews(){
             contentDiv.appendChild(downloadLink);
             contentDiv.appendChild(statusId);
             contentDiv.appendChild(pushNotification);
+            contentDiv.appendChild(groupId);
             contentDiv.appendChild(newsId);
 
             contentDiv.appendChild(saveBtn);
@@ -110,16 +125,17 @@ function fillSelectStatus(selectElement){
     selectElement.appendChild(option);
 }
 
-async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadLink,statusIdStr,authorId,liked,disliked,viewCount,pushNotificationStr){
+async function saveNews(id,title,messageDate,message,typeStr,mediaLink,downloadLink,statusIdStr,authorId,liked,disliked,viewCount,pushNotificationStr,groupIdStr){
     const type = Number(typeStr);
     const statusId = Number(statusIdStr);
     const pushNotification = Number(pushNotificationStr);
+    const groupId = Number(groupIdStr);
 
     try{
         const res=await fetch('https://localhost:8081/api/v1/news/'+id,{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId,liked,disliked,viewCount,pushNotification})
+            body:JSON.stringify({id,title,messageDate,message,type,mediaLink,downloadLink,statusId,authorId,liked,disliked,viewCount,pushNotification,groupId})
         });
         if (!res.ok) {
             const message = `An error occurred: ${res.status}`;

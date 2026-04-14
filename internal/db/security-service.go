@@ -78,9 +78,11 @@ func CreateDefaultUser() error {
 	}
 	if len(users) == 0 {
 		adminUser := models.User{
+			Name:     "admin",
 			Login:    "admin",
 			Password: "ISMvKXpXpadDiUoOSoAfww==",
 			Role:     "admin",
+			Status:   "Active",
 		}
 		result = db.Create(&adminUser)
 		if result.Error != nil {

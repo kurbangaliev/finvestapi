@@ -13,9 +13,9 @@ import (
 )
 
 func generateApiHandlers[T comparable](r *mux.Router, apiModelUri string) {
-	r.HandleFunc(fmt.Sprintf("/%s/", apiModelUri), handlers.HandleAddObject[T]).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s", apiModelUri), handlers.HandleAddObject[T]).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleEditObject[T]).Methods("PUT")
-	r.HandleFunc(fmt.Sprintf("/%s/", apiModelUri), handlers.HandleGetObjects[T]).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s", apiModelUri), handlers.HandleGetObjects[T]).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleGetObject[T]).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/{id}", apiModelUri), handlers.HandleDeleteObject[T]).Methods("DELETE")
 }
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080", "https://cabinet.finvest.kz", "http://192.168.111.11:8080",
+		AllowedOrigins: []string{"http://localhost:8080", "http://localhost:3000", "https://cabinet.finvest.kz", "http://192.168.111.11:8080",
 			"http://192.168.111.103", "https://localhost:7443", "https://192.168.111.103", "https://192.168.111.11:7443"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -57,6 +57,8 @@ func main() {
 	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
+	//Users handlers
+	generateApiHandlers[models.User](apiV1, "users")
 	////manager handlers
 	//r.HandleFunc("/managers/", handlers.HandleAddManager).Methods("POST")
 	//r.HandleFunc("/managers/{id}", handlers.HandleEditManagers).Methods("PUT")

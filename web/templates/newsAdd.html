@@ -95,6 +95,14 @@
                 <option value="true">Да</option>
             </select>
         </div>
+        <div>
+            <label for="groupId">Отправлять уведомления</label>
+            <select class="form-control" id="groupId" required>
+                <option selected disabled hidden="hidden">Тип сообщений</option>
+                <option value="0">Новость</option>
+                <option value="1">Акция</option>
+            </select>
+        </div>
         <button type="button" class="btn btn-primary" id="submitBtn" onclick="createNews();">Сохранить</button>
     </div>
 </main>

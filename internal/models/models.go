@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -9,6 +11,10 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type NewsGroup struct {
+	gorm.Model
+	Title string `gorm:"type:text" json:"title"`
+}
 type News struct {
 	gorm.Model
 	Title            string `gorm:"type:text" json:"title"`
@@ -23,6 +29,7 @@ type News struct {
 	Disliked         int    `gorm:"default:0" json:"disliked"`
 	ViewCount        int    `gorm:"default:0" json:"viewCount"`
 	PushNotification int    `gorm:"default:0" json:"pushNotification"`
+	GroupId          int    `gorm:"default:0" json:"groupId"`
 }
 
 type NewsLike struct {
@@ -47,9 +54,14 @@ type NewsAnalytics struct {
 
 type User struct {
 	gorm.Model
-	Login    string `gorm:"size:255" json:"login"`
-	Password string `gorm:"size:255" json:"password"`
-	Role     string `gorm:"size:255" json:"role"`
+	Name      string `gorm:"size:255" json:"name"`
+	Login     string `gorm:"size:255" json:"login"`
+	Password  string `gorm:"size:255" json:"password"`
+	Role      string `gorm:"size:255" json:"role"`
+	Email     string `gorm:"size:255" json:"email"`
+	Status    string `gorm:"size:255" json:"status"`
+	LastLogin time.Time
+	ImageUrl  string `gorm:"size:255" json:"imageUrl"`
 }
 
 type CallProcedureResult struct {
