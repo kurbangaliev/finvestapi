@@ -10,7 +10,7 @@ import (
 )
 
 func UpdateUser(user models.User) error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func UpdateUser(user models.User) error {
 }
 
 func DeleteUser(id uint) error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func DeleteUser(id uint) error {
 }
 
 func CreateDefaultUser() error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func CreateDefaultUser() error {
 }
 
 func FindUserByLogin(login string) (*models.User, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return nil, err
 	}

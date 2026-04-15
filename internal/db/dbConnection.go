@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func DbConnection() (*gorm.DB, error) {
+// OpenConnection for database postgres
+func OpenConnection() (*gorm.DB, error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbHost := os.Getenv("DB_HOST")
@@ -31,82 +33,38 @@ func DbConnection() (*gorm.DB, error) {
 	return db, nil
 }
 
-func AutoMigrate() error {
-	db, err := DbConnection()
-
-	// Get the underlying *sql.DB connection pool
-	sqlDB, err := db.DB()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Defer the closing of the underlying connection pool
-	defer sqlDB.Close()
-
+// AutoMigrateObjects automatically migrates all registered model types
+func AutoMigrateObjects() error {
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer sqlDB.Close()
+
 	log.Println(db)
 
-	err = db.AutoMigrate(&models.News{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "News",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
-		}
-	}
+	// Migrate all registered models
+	for _, model := range models.ModelRegistry {
+		modelType := reflect.TypeOf(model).Elem()
+		modelName := modelType.Name()
 
-	err = db.AutoMigrate(&models.NewsLike{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "NewsLike",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
+		err = db.AutoMigrate(model)
+		if err != nil {
+			log.Printf("Failed to migrate model: %s", modelName)
+			return &MigrateError{
+				Model:   modelName,
+				Message: err.Error(),
+				Err:     ErrAutoMigrate,
+			}
 		}
-	}
-
-	err = db.AutoMigrate(&models.NewsViewing{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "NewsViewing",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
-		}
-	}
-
-	err = db.AutoMigrate(&models.NewsAnalytics{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "NewsAnalytics",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
-		}
-	}
-
-	err = db.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "User",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
-		}
-	}
-
-	err = db.AutoMigrate(&models.NewsGroup{})
-	if err != nil {
-		log.Fatal(err)
-		return &MigrateError{
-			Model:   "NewsGroup",
-			Message: err.Error(),
-			Err:     ErrAutoMigrate, // Wrap the sentinel error
-		}
+		log.Printf("Successfully migrated model: %s", modelName)
 	}
 
 	return nil

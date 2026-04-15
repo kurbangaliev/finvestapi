@@ -9,7 +9,7 @@ import (
 func LoadAllNews() ([]models.News, error) {
 	var items []models.News
 
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func LoadAllNews() ([]models.News, error) {
 func LoadEnableNews() ([]models.News, error) {
 	var items []models.News
 
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func LoadEnableNews() ([]models.News, error) {
 }
 
 func LikeNews(item models.NewsLike) error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func LikeNews(item models.NewsLike) error {
 }
 
 func ViewNews(item models.NewsViewing) error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,7 @@ func ViewNews(item models.NewsViewing) error {
 }
 
 func GetLikesView(id int) (models.CallProcedureResult, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return models.CallProcedureResult{}, err
 	}
@@ -118,7 +118,7 @@ func GetLikesView(id int) (models.CallProcedureResult, error) {
 }
 
 func GetNewsAnalytics(id int) (models.News, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -141,7 +141,7 @@ func GetNewsAnalytics(id int) (models.News, error) {
 }
 
 func SaveNews(item models.News) (models.News, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	// Get the underlying *sql.DB connection pool
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -165,7 +165,7 @@ func SaveNews(item models.News) (models.News, error) {
 func UpdateNews(item models.News) (models.News, error) {
 	log.Println("UpdateNews")
 	log.Printf("Update Item: %v", item)
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	// Get the underlying *sql.DB connection pool
 	sqlDB, err := db.DB()
 	if err != nil {

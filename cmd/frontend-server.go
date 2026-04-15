@@ -1,7 +1,6 @@
 package main
 
 import (
-	"finvestapi/internal/db"
 	"finvestapi/internal/handlers"
 	"fmt"
 	"log"
@@ -18,16 +17,16 @@ const (
 
 func main() {
 	fmt.Println("Server is starting...")
-	fmt.Println("Database auto migrate...")
-	err := db.AutoMigrate()
-	if err != nil {
-		log.Println(err)
-	}
-
-	err = db.CreateDefaultUser()
-	if err != nil {
-		log.Println(err)
-	}
+	//fmt.Println("Database auto migrate...")
+	//err := db.AutoMigrateObjects()
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//
+	//err = db.CreateDefaultUser()
+	//if err != nil {
+	//	log.Println(err)
+	//}
 
 	fmt.Println("Frontend server handling requests...")
 	r := mux.NewRouter()
@@ -51,9 +50,15 @@ func main() {
 	// Private Routes
 	protected := r.PathPrefix("/").Subrouter()
 	protected.Use(handlers.JWTAuth)
-	// Admin page handlers
+	// News page handlers
 	protected.HandleFunc("/newsAdd", handlers.NewsAddPage).Methods("GET")
 	protected.HandleFunc("/newsBrowser", handlers.NewsBrowserPage).Methods("GET")
+	// Group News page handlers
+	//protected.HandleFunc("/groupNewsAdd", handlers.NewsAddPage).Methods("GET")
+	//protected.HandleFunc("/groupNewsBrowser", handlers.NewsBrowserPage).Methods("GET")
+
+	protected.Handle("/groupNewsBrowser", handlers.ShowTemplatePage("web/templates/groupNewsBrowser.html", http.HandlerFunc(handlers.HandlerTemplate))).Methods("GET")
+	protected.Handle("/groupNewsAdd", handlers.ShowTemplatePage("web/templates/groupNewsAdd.html", http.HandlerFunc(handlers.HandlerTemplate))).Methods("GET")
 
 	//log.Println("🚀 Frontend Server started on http://localhost:8080")
 	//log.Fatal(http.ListenAndServe(":8080", r))

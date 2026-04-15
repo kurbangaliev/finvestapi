@@ -7,7 +7,7 @@ import (
 func SelectAll[T comparable]() ([]T, error) {
 	var items []T
 
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func SelectAll[T comparable]() ([]T, error) {
 }
 
 func Select[T comparable](item T) (T, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func Select[T comparable](item T) (T, error) {
 }
 
 func SaveObject[T comparable](item T) (T, error) {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	// Get the underlying *sql.DB connection pool
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -74,7 +74,7 @@ func SaveObject[T comparable](item T) (T, error) {
 }
 
 func DeleteObject[T comparable](item T) error {
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func DeleteObject[T comparable](item T) error {
 
 func UpdateObject[T comparable](item T) error {
 	log.Printf("UpdateObject. %v", item)
-	db, err := DbConnection()
+	db, err := OpenConnection()
 	if err != nil {
 		return err
 	}

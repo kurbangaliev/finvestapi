@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Администрирование новостей</title>
+    <title>Администрирование групп новостей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="/assets/styles/admin.css" rel="stylesheet">
@@ -12,15 +12,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossor>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="/assets/js/admin.js" type="text/javascript"></script>
-    <script src="/assets/js/news.js" type="text/javascript"></script>
+    <script src="/assets/js/groupNews.js" type="text/javascript"></script>
     <script src="/assets/js/tinyMCE.js" type="text/javascript"></script>
     <script src="/assets/js/admin.js" type="text/javascript"></script>
 </head>
 <body>
 <header class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand">Администрирование новостей</a>
-        <a class="nav-link" href="/newsAdd"><img src="assets/icons/add-square.svg"  width="32" height="32"/></a>
+        <a class="navbar-brand">Администрирование групп новостей</a>
+        <a class="nav-link" href="/groupNewsAdd"><img src="assets/icons/add-square.svg"  width="32" height="32"/></a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -39,11 +39,11 @@
     </div>
 </header>
 
-<main id="newsContainer"></main>
+<main id="newsGroupContainer"></main>
 
 <script>
     // --- Инициализация ---
-    loadNews();
+    loadGroupNews();
 </script>
 </body>
 </html>

@@ -6,6 +6,24 @@ import (
 	"gorm.io/gorm"
 )
 
+// ModelRegistry holds all registered models
+var ModelRegistry = []interface{}{}
+
+// RegisterModel adds a model to the registry
+func RegisterModel(model interface{}) {
+	ModelRegistry = append(ModelRegistry, model)
+}
+
+func init() {
+	// Register all models
+	RegisterModel(&News{})
+	RegisterModel(&NewsLike{})
+	RegisterModel(&NewsViewing{})
+	RegisterModel(&NewsAnalytics{})
+	RegisterModel(&User{})
+	RegisterModel(&NewsGroup{})
+}
+
 type LoginRequest struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`

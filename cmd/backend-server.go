@@ -23,7 +23,12 @@ func generateApiHandlers[T comparable](r *mux.Router, apiModelUri string) {
 func main() {
 	log.Println("Backend server is starting...")
 	log.Println("Database auto migrate...")
-	err := db.AutoMigrate()
+	err := db.AutoMigrateObjects()
+	if err != nil {
+		log.Println(err)
+	}
+
+	err = db.CreateDefaultUser()
 	if err != nil {
 		log.Println(err)
 	}
@@ -42,23 +47,25 @@ func main() {
 	// --- Version 1 API ---
 	apiV1 := mainRouter.PathPrefix("/api/v1").Subrouter()
 	//enableNews handlers
-	apiV1.HandleFunc("/enableNews/", handlers.HandleEnableNews).Methods("GET")
+	apiV1.HandleFunc("/enableNews", handlers.HandleEnableNews).Methods("GET")
 	//news handlers
-	apiV1.HandleFunc("/news/", handlers.HandleAllNews).Methods("GET")
+	apiV1.HandleFunc("/news", handlers.HandleAllNews).Methods("GET")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")
-	apiV1.HandleFunc("/news/", handlers.HandleAddNews).Methods("POST")
+	apiV1.HandleFunc("/news", handlers.HandleAddNews).Methods("POST")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleEditNews).Methods("PUT")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
 	//generateApiHandlers[models.News](apiV1, "news")
 	//LikeNews and Dislike
-	apiV1.HandleFunc("/news/like/", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/like", handlers.HandleLikeNews).Methods("PUT")
 	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
 	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
-	apiV1.HandleFunc("/news/dislike/", handlers.HandleLikeNews).Methods("PUT")
-	apiV1.HandleFunc("/news/view/", handlers.HandleViewNews).Methods("PUT")
+	apiV1.HandleFunc("/news/dislike", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/news/view", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
 	//Users handlers
 	generateApiHandlers[models.User](apiV1, "users")
+	//GroupNews handlers
+	generateApiHandlers[models.NewsGroup](apiV1, "groupNews")
 	////manager handlers
 	//r.HandleFunc("/managers/", handlers.HandleAddManager).Methods("POST")
 	//r.HandleFunc("/managers/{id}", handlers.HandleEditManagers).Methods("PUT")
