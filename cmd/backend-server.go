@@ -56,13 +56,13 @@ func main() {
 	apiV1.HandleFunc("/news/{id}", handlers.HandleDeleteObject[models.News]).Methods("DELETE")
 	//generateApiHandlers[models.News](apiV1, "news")
 	//LikeNews and Dislike
-	apiV1.HandleFunc("/news/like", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/viewNews/like", handlers.HandleLikeNews).Methods("PUT")
 	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
-	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
-	apiV1.HandleFunc("/news/dislike", handlers.HandleLikeNews).Methods("PUT")
+	apiV1.HandleFunc("/viewNews/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
+	apiV1.HandleFunc("/viewNews/dislike", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/viewNews/open", handlers.HandleViewNews).Methods("PUT")
-	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
-	apiV1.HandleFunc("/news/loadUnread/{id}", handlers.HandleGetNewsUnread).Methods("GET")
+	apiV1.HandleFunc("/viewNews/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
+	apiV1.HandleFunc("/viewNews/loadUnread/{id}", handlers.HandleGetNewsUnread).Methods("GET")
 	//Users handlers
 	generateApiHandlers[models.User](apiV1, "users")
 	//GroupNews handlers
