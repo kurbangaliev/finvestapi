@@ -76,6 +76,7 @@ func HandleGetLikeNews(w http.ResponseWriter, r *http.Request) {
 
 // HandleViewNews PUT /news/view/
 func HandleViewNews(w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleViewNews")
 	var item models.NewsViewing
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -84,11 +85,14 @@ func HandleViewNews(w http.ResponseWriter, r *http.Request) {
 
 	err := db.ViewNews(item)
 	if err != nil {
-		http.Error(w, "Failed to update item", http.StatusInternalServerError)
+		http.Error(w, "Failed to create NewsViewing item", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotModified)
+		w.Write([]byte("News Viewing not updated"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("News updated"))
+	w.Write([]byte("News Viewing updated"))
 }
 
 // HandleGetLikeNews GET /news/analytics/{id}
