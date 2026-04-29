@@ -60,7 +60,7 @@ func main() {
 	//apiV1.HandleFunc("/news/like/", handlers.HandleAddObject[models.NewsLike]).Methods("PUT")
 	apiV1.HandleFunc("/news/like/{id}", handlers.HandleGetLikeNews).Methods("GET")
 	apiV1.HandleFunc("/news/dislike", handlers.HandleLikeNews).Methods("PUT")
-	apiV1.HandleFunc("/news/view", handlers.HandleViewNews).Methods("PUT")
+	apiV1.HandleFunc("/viewNews/open", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
 	apiV1.HandleFunc("/news/loadUnread/{id}", handlers.HandleGetNewsUnread).Methods("GET")
 	//Users handlers
