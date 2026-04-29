@@ -50,6 +50,30 @@ func LoadEnableNews() ([]models.News, error) {
 	return items, nil
 }
 
+func GetUnreadNews(id int) ([]models.UnreadNews, error) {
+	var items []models.UnreadNews
+
+	db, err := OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Get the underlying *sql.DB connection pool
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Defer the closing of the underlying connection pool
+	defer sqlDB.Close()
+
+	query := "SELECT * FROM public.sp_loadunreadnews(?)"
+	err = db.Raw(query, id).Scan(&items).Error
+	if err != nil {
+		return []models.UnreadNews{}, err
+	}
+	return items, nil
+}
+
 func LikeNews(item models.NewsLike) error {
 	db, err := OpenConnection()
 	if err != nil {

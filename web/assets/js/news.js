@@ -39,7 +39,7 @@ async function loadNews(){
         const dislike = 0;
         const like = 1;
         const userId = 0;
-        const res = await fetch('https://localhost:8081/api/v1/news/');
+        const res = await fetch('https://localhost:8081/api/v1/news');
         const newsList = await res.json();
         newsContainer.innerHTML='';
         newsList.forEach((item,index)=>{

@@ -62,6 +62,7 @@ func main() {
 	apiV1.HandleFunc("/news/dislike", handlers.HandleLikeNews).Methods("PUT")
 	apiV1.HandleFunc("/news/view", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/news/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
+	apiV1.HandleFunc("/news/loadUnread/{id}", handlers.HandleGetNewsUnread).Methods("GET")
 	//Users handlers
 	generateApiHandlers[models.User](apiV1, "users")
 	//GroupNews handlers

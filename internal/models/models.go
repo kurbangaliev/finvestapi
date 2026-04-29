@@ -50,6 +50,12 @@ type News struct {
 	GroupId          int    `gorm:"default:0" json:"groupId"`
 }
 
+type UnreadNews struct {
+	gorm.Model
+	Title       string `gorm:"type:text" json:"title"`
+	MessageDate string `gorm:"size:20" json:"messageDate"`
+}
+
 type NewsLike struct {
 	gorm.Model
 	NewsId int `gorm:"default:0" json:"newsId"`

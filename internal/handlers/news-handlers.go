@@ -112,6 +112,27 @@ func HandleGetNewsAnalytics(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(item)
 }
 
+// HandleGetNewsUnread GET /news/loadUnread/{id}
+func HandleGetNewsUnread(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	strId := vars["id"]
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		http.Error(w, "Invalid user id", http.StatusBadRequest)
+		return
+	}
+
+	item, err := db.GetUnreadNews(id)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(`{"error": "` + err.Error() + `"}`)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(item)
+}
+
 // HandleAddNews POST /news/
 func HandleAddNews(w http.ResponseWriter, r *http.Request) {
 	var item models.News
