@@ -48,6 +48,7 @@ func main() {
 	apiV1 := mainRouter.PathPrefix("/api/v1").Subrouter()
 	//enableNews handlers
 	apiV1.HandleFunc("/enableNews", handlers.HandleEnableNews).Methods("GET")
+	apiV1.HandleFunc("/news/group/{id}", handlers.HandleNewsGroup).Methods("GET")
 	//news handlers
 	apiV1.HandleFunc("/news", handlers.HandleAllNews).Methods("GET")
 	apiV1.HandleFunc("/news/{id}", handlers.HandleGetObject[models.News]).Methods("GET")

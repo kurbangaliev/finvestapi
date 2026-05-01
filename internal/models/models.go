@@ -67,6 +67,7 @@ type NewsViewing struct {
 	gorm.Model
 	NewsId int `gorm:"default:0" json:"newsId"`
 	UserId int `gorm:"default:0" json:"userId"`
+	Count  int `gorm:"default:1" json:"userId"`
 }
 
 type NewsAnalytics struct {

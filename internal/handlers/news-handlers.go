@@ -24,6 +24,27 @@ func HandleAllNews(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(items)
 }
 
+// HandleNewsGroup GET /news/group/{id}
+func HandleNewsGroup(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	strId := vars["id"]
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	items, err := db.LoadNewsGroup(id)
+	if err != nil {
+		log.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(`{"error": "` + err.Error() + `"}`)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(items)
+}
+
 // HandleEnableNews GET /enableNews/
 func HandleEnableNews(w http.ResponseWriter, r *http.Request) {
 	items, err := db.LoadEnableNews()

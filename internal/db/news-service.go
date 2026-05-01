@@ -28,6 +28,28 @@ func LoadAllNews() ([]models.News, error) {
 	return items, nil
 }
 
+func LoadNewsGroup(id int) ([]models.News, error) {
+	var items []models.News
+
+	db, err := OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sqlDB.Close()
+
+	result := db.Order("message_date DESC").Where("group_id = ?", id).Where("status_id = 1").Find(&items)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+
+	return items, nil
+}
+
 func LoadEnableNews() ([]models.News, error) {
 	var items []models.News
 
