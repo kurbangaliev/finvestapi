@@ -92,7 +92,7 @@ type User struct {
 
 type Document struct {
 	gorm.Model
-	Order       int    `gorm:"default:0" json:"order"`
+	OrderIndex  int    `gorm:"default:0" json:"orderIndex"`
 	Title       string `gorm:"type:text" json:"title"`
 	IconUrl     string `gorm:"type:text" json:"iconUrl"`
 	DocumentUrl string `gorm:"type:text" json:"documentUrl"`
