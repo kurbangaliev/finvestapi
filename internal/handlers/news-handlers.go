@@ -114,6 +114,7 @@ func HandleViewNews(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("News Viewing updated"))
+	log.Printf("Backend Server. News Viewing updated. Items: NewsId=%d UserId=%d", item.NewsId, item.UserId)
 }
 
 // HandleGetLikeNews GET /news/analytics/{id}
