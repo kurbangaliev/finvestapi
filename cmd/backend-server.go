@@ -64,6 +64,12 @@ func main() {
 	apiV1.HandleFunc("/viewNews/open", handlers.HandleViewNews).Methods("PUT")
 	apiV1.HandleFunc("/viewNews/analytics/{id}", handlers.HandleGetNewsAnalytics).Methods("GET")
 	apiV1.HandleFunc("/viewNews/loadUnread/{id}", handlers.HandleGetNewsUnread).Methods("GET")
+	//Documents
+	apiV1.HandleFunc("/documents", handlers.HandleGetObjects[models.Document]).Methods("GET")
+	apiV1.HandleFunc("/documents/{id}", handlers.HandleGetObject[models.Document]).Methods("GET")
+	apiV1.HandleFunc("/documents", handlers.HandleAddObject[models.Document]).Methods("POST")
+	apiV1.HandleFunc("/documents/{id}", handlers.HandleEditObject[models.Document]).Methods("PUT")
+	apiV1.HandleFunc("/documents/{id}", handlers.HandleDeleteObject[models.Document]).Methods("DELETE")
 	//Users handlers
 	generateApiHandlers[models.User](apiV1, "users")
 	//GroupNews handlers

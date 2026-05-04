@@ -22,6 +22,7 @@ func init() {
 	RegisterModel(&NewsAnalytics{})
 	RegisterModel(&User{})
 	RegisterModel(&NewsGroup{})
+	RegisterModel(&Document{})
 }
 
 type LoginRequest struct {
@@ -87,6 +88,14 @@ type User struct {
 	Status    string `gorm:"size:255" json:"status"`
 	LastLogin time.Time
 	ImageUrl  string `gorm:"size:255" json:"imageUrl"`
+}
+
+type Document struct {
+	gorm.Model
+	Order       int    `gorm:"default:0" json:"order"`
+	Title       string `gorm:"type:text" json:"title"`
+	IconUrl     string `gorm:"type:text" json:"iconUrl"`
+	DocumentUrl string `gorm:"type:text" json:"documentUrl"`
 }
 
 type CallProcedureResult struct {
